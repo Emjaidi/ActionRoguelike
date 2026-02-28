@@ -1,6 +1,10 @@
 # Visual Studio user specific files
 .vs/
 .vsconfig
+.ignore
+.vscode/
+*.code-workspace
+
 
 # Rider
 .idea/
