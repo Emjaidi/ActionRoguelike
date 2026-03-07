@@ -84,6 +84,8 @@ protected:
 	void Look(const FInputActionInstance& InValue);
 
 	void StartProjectileAttack(TSubclassOf<ARogueProjectile> ProjectileClass);
+	
+	void StartAction(FName InActionName);
 
 	void AttackTimerElapsed(TSubclassOf<ARogueProjectile> ProjectileClass);
 
