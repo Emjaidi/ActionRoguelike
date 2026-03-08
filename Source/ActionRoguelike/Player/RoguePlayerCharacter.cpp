@@ -3,15 +3,11 @@
 
 #include "RoguePlayerCharacter.h"
 
-#include "Projectiles/RogueProjectileMagic.h"
 #include "EnhancedInputComponent.h"
-#include "NiagaraFunctionLibrary.h"
-#include "RogueGameTypes.h"
 #include "ActionSystem/RogueActionSystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Kismet/GameplayStatics.h"
 
 
 
@@ -50,6 +46,12 @@ void ARoguePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 	EnhancedInput->BindAction(Input_Look, ETriggerEvent::Triggered, this, &ARoguePlayerCharacter::Look);
 	
 	EnhancedInput->BindAction(Input_Jump, ETriggerEvent::Triggered, this, &ARoguePlayerCharacter::Jump);
+	
+	EnhancedInput->BindAction(Input_Sprint, ETriggerEvent::Started, this,
+		&ARoguePlayerCharacter::StartAction, FName("Sprint"));
+	
+	EnhancedInput->BindAction(Input_Sprint, ETriggerEvent::Completed, this,
+		&ARoguePlayerCharacter::StopAction, FName("Sprint"));
 
 	// Projectile Attacks
 	EnhancedInput->BindAction(Input_PrimaryAttack, ETriggerEvent::Triggered, this,
@@ -86,6 +88,11 @@ void ARoguePlayerCharacter::Look(const FInputActionInstance& InValue)
 void ARoguePlayerCharacter::StartAction(FName InActionName)
 {
 	ActionSystemComponent->StartAction(InActionName);
+}
+
+void ARoguePlayerCharacter::StopAction(FName InActionName)
+{
+	ActionSystemComponent->StopAction(InActionName);
 }
 
 
