@@ -14,8 +14,20 @@ URogueActionSystemComponent::URogueActionSystemComponent()
 void URogueActionSystemComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
+
+	for (TSubclassOf<URogueAction> ActionClass : DefaultActions)
+	{
+		if (ensure(ActionClass))
+		{
+			GrantAction(ActionClass);
+		}
+	}
 	
-	URogueAction* NewAction = NewObject<URogueAction>(this, URogueAction::StaticClass());
+}
+
+void URogueActionSystemComponent::GrantAction(TSubclassOf<URogueAction> NewActionClass)
+{
+	URogueAction* NewAction = NewObject<URogueAction>(this, NewActionClass);
 	Actions.Add(NewAction);
 }
 
@@ -61,3 +73,4 @@ float URogueActionSystemComponent::GetHealthMax() const
 {
 	return Attributes.HealthMax;
 }
+

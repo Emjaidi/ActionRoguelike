@@ -5,6 +5,13 @@
 
 #include <ThirdParty/ShaderConductor/ShaderConductor/External/DirectXShaderCompiler/include/dxc/DXIL/DxilConstants.h>
 
+#include "RogueActionSystemComponent.h"
+
+
+URogueActionSystemComponent* URogueAction::GetOwningComponent() const
+{
+	return Cast<URogueActionSystemComponent>(GetOuter());
+}
 
 void URogueAction::StartAction()
 {
