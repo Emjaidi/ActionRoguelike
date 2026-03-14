@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "RogueActionSystemComponent.generated.h"
 
+struct FGameplayTag;
 class URogueAction;
 
 USTRUCT(BlueprintType)
@@ -37,9 +38,9 @@ public:
 
 	virtual void InitializeComponent() override;
 	
-	void StartAction(FName InActionName);
+	void StartAction(FGameplayTag InActionName);
 	
-	void StopAction(FName InActionName);
+	void StopAction(FGameplayTag InActionName);
 	
 	void ApplyHealthChange(float InValueChange);
 

@@ -23,7 +23,7 @@ void URogueAction::StartAction_Implementation()
 	
 	float GameTime = GetWorld()->TimeSeconds;
 	UE_LOGFMT(LogTemp, Log, "Started Action {ActionName} - {WorldTime}", 
-		("ActionName", ActionName), 
+		("ActionName", ActionName.ToString()), 
 		("WorldTime", GameTime));
 	
 	CoolDownUntil = GetWorld()->TimeSeconds + CooldownTime; 
@@ -35,7 +35,7 @@ void URogueAction::StopAction_Implementation()
 	
 	float GameTime = GetWorld()->TimeSeconds;
 	UE_LOGFMT(LogTemp, Log, "Stopped Action {ActionName} - {WorldTime}", 
-		("ActionName", ActionName), 
+		("ActionName", ActionName.ToString()), 
 		("WorldTime", GameTime));
 }
 

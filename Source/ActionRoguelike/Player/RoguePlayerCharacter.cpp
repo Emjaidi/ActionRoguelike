@@ -5,6 +5,8 @@
 
 #include "EnhancedInputComponent.h"
 #include "ActionSystem/RogueActionSystemComponent.h"
+#include "GameplayTagContainer.h"
+#include "SharedGameplayTags.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -48,18 +50,18 @@ void ARoguePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 	EnhancedInput->BindAction(Input_Jump, ETriggerEvent::Triggered, this, &ARoguePlayerCharacter::Jump);
 	
 	EnhancedInput->BindAction(Input_Sprint, ETriggerEvent::Started, this,
-		&ARoguePlayerCharacter::StartAction, FName("Sprint"));
+		&ARoguePlayerCharacter::StartAction, SharedGameplayTags::Action_Sprint.GetTag());
 	
 	EnhancedInput->BindAction(Input_Sprint, ETriggerEvent::Completed, this,
-		&ARoguePlayerCharacter::StopAction, FName("Sprint"));
+		&ARoguePlayerCharacter::StopAction, SharedGameplayTags::Action_Sprint.GetTag());
 
 	// Projectile Attacks
 	EnhancedInput->BindAction(Input_PrimaryAttack, ETriggerEvent::Triggered, this,
-		&ARoguePlayerCharacter::StartAction, FName("PrimaryAttack"));
+		&ARoguePlayerCharacter::StartAction, SharedGameplayTags::Action_PrimaryAttack.GetTag());
 	EnhancedInput->BindAction(Input_SecondaryAttack, ETriggerEvent::Triggered, this,
-		&ARoguePlayerCharacter::StartAction, FName("SecondaryAttack"));
+		&ARoguePlayerCharacter::StartAction, SharedGameplayTags::Action_SecondaryAttack.GetTag());
 	EnhancedInput->BindAction(Input_SpecialAttack, ETriggerEvent::Triggered, this,
-		&ARoguePlayerCharacter::StartAction, FName("SpecialAttack"));
+		&ARoguePlayerCharacter::StartAction, SharedGameplayTags::Action_SpecialAttack.GetTag());
 }
 
 void ARoguePlayerCharacter::Move(const FInputActionValue& InValue)
@@ -85,12 +87,12 @@ void ARoguePlayerCharacter::Look(const FInputActionInstance& InValue)
 	AddControllerYawInput(InputValue.X);
 }
 
-void ARoguePlayerCharacter::StartAction(FName InActionName)
+void ARoguePlayerCharacter::StartAction(FGameplayTag InActionName)
 {
 	ActionSystemComponent->StartAction(InActionName);
 }
 
-void ARoguePlayerCharacter::StopAction(FName InActionName)
+void ARoguePlayerCharacter::StopAction(FGameplayTag InActionName)
 {
 	ActionSystemComponent->StopAction(InActionName);
 }
