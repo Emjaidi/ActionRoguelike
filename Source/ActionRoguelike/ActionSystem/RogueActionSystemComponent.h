@@ -12,7 +12,17 @@ struct FRogueAttributeSet;
 class URogueAction;
 class URogueAttributeSet;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthChanged, float, NewHealth, float, OldHealth);
+
+UENUM()
+enum EAttributeModifyType
+{
+	Base,
+	Modifier,
+	OverrideBase,
+	Invalid
+};
+
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnAttributeChanged, FGameplayTag, float /* NewHealth*/, float /* OldHealth*/);
 
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -28,18 +38,18 @@ public:
 	
 	void StopAction(FGameplayTag InActionName);
 	
-	void ApplyHealthChange(float InValueChange);
-
-	bool IsFullHealth() const;
-
-	UPROPERTY(BlueprintAssignable)
-	FOnHealthChanged OnHealthChanged;
-
+	void ApplyAttributeChange(FGameplayTag AttributeTag, float NewValue, EAttributeModifyType ModifyType );
+	
 	FRogueAttribute* GetAttribute(FGameplayTag InAttributeTag);
 
+	FOnAttributeChanged& GetAttributeListener(FGameplayTag AttributeTag);
+	
 	void GrantAction(TSubclassOf<URogueAction> NewActionClass);
 	
 	FGameplayTagContainer ActiveGameplayTags;
+	
+	void OnHealthChanged(FGameplayTag AttributeTag, float NewHealth, float OldHealth);
+	
 protected:
 
 	UPROPERTY()
@@ -50,6 +60,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Attributes", NoClear)
 	TSubclassOf<URogueAttributeSet> AttributeSetClass;
 
+	TMap<FGameplayTag, FOnAttributeChanged> AttributeListeners;
 	UPROPERTY()
 	TArray<TObjectPtr<URogueAction>> Actions;
 	

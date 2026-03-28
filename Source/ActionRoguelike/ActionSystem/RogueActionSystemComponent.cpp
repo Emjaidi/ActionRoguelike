@@ -5,6 +5,7 @@
 
 #include "RogueAction.h"
 #include "RogueAttributeSet.h"
+#include "SharedGameplayTags.h"
 
 
 URogueActionSystemComponent::URogueActionSystemComponent()
@@ -25,7 +26,7 @@ void URogueActionSystemComponent::InitializeComponent()
 	{
 		FRogueAttribute* FoundAttribute = PropIt->ContainerPtrToValuePtr<FRogueAttribute>(Attributes);
 		
-		FName AttributeTagName = FName("Attribute" + PropIt->GetName());
+		FName AttributeTagName = FName("Attribute." + PropIt->GetName());
 		FGameplayTag AttributeTag  = FGameplayTag::RequestGameplayTag(AttributeTagName);
 		CachedAttributes.Add(AttributeTag, FoundAttribute);
 	}
@@ -37,12 +38,19 @@ void URogueActionSystemComponent::InitializeComponent()
 		}
 	}
 	
+	FOnAttributeChanged& Event = AttributeListeners.FindOrAdd(SharedGameplayTags::Attribute_Health);
+	Event.AddUObject(this, &ThisClass::OnHealthChanged);
 }
 
 void URogueActionSystemComponent::GrantAction(TSubclassOf<URogueAction> NewActionClass)
 {
 	URogueAction* NewAction = NewObject<URogueAction>(this, NewActionClass);
 	Actions.Add(NewAction);
+}
+
+void URogueActionSystemComponent::OnHealthChanged(FGameplayTag AttributeTag, float NewHealth, float OldHealth)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Attribute delegate triggered"));
 }
 
 void URogueActionSystemComponent::StartAction(FGameplayTag InActionName)
@@ -76,23 +84,42 @@ void URogueActionSystemComponent::StopAction(FGameplayTag InActionName)
 	UE_LOG(LogTemp, Warning, TEXT("No Action found with the name %s"), *InActionName.ToString());
 }
 
-void URogueActionSystemComponent::ApplyHealthChange(float InValueChange)
-{
-	// float OldHealth = Attributes.Health;
-	//
-	// Attributes.Health = FMath::Clamp(Attributes.Health + InValueChange, 0.0f, Attributes.HealthMax);
-	//
-	// if (!FMath::IsNearlyEqual(OldHealth, Attributes.Health))
-	// {
-	// 	OnHealthChanged.Broadcast(Attributes.Health, OldHealth);
-	// }
-	//
-	// UE_LOG(LogTemp, Log, TEXT("New Health: %f, Max Health: %f"), Attributes.Health, Attributes.HealthMax);
-}
 
-bool URogueActionSystemComponent::IsFullHealth() const
+void URogueActionSystemComponent::ApplyAttributeChange(FGameplayTag AttributeTag, float Delta, EAttributeModifyType ModifyType = Modifier)
 {
-	return true; //FMath::IsNearlyEqual(Attributes.HealthMax, Attributes.Health);
+	FRogueAttribute* FoundAttribute = GetAttribute(AttributeTag);
+	
+	float OldValue = FoundAttribute->GetValue();
+	
+	check(FoundAttribute);
+	
+	switch (ModifyType)
+	{
+	case Base:
+		FoundAttribute->Base += Delta;
+		break;
+	case Modifier:
+		FoundAttribute->Modifier += Delta;
+		break;
+		
+	case OverrideBase:
+		FoundAttribute->Base += Delta;
+		break;
+	default:
+		check(false);
+		
+	}
+	
+	Attributes->PostAttributeChanged();
+	if (FOnAttributeChanged* Event = AttributeListeners.Find(AttributeTag))
+	{
+		Event->Broadcast(AttributeTag, FoundAttribute->GetValue(), OldValue);
+	}
+	
+	UE_LOGFMT(LogTemp, Log, "Attribute: {0}, New: {1}, Old: {2}",
+		AttributeTag.ToString(),
+		FoundAttribute->GetValue(),
+		OldValue);
 }
 
 FRogueAttribute* URogueActionSystemComponent::GetAttribute(FGameplayTag InAttributeTag)
@@ -100,5 +127,10 @@ FRogueAttribute* URogueActionSystemComponent::GetAttribute(FGameplayTag InAttrib
 	FRogueAttribute** FoundAttribute = CachedAttributes.Find(InAttributeTag);
 	
 	return *FoundAttribute;
+}
+
+FOnAttributeChanged& URogueActionSystemComponent::GetAttributeListener(FGameplayTag AttributeTag)
+{
+	return AttributeListeners.FindOrAdd(AttributeTag);
 }
 
