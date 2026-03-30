@@ -3,11 +3,49 @@
 
 #include "RogueAttributeSet.h"
 
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
+
+
+URoguePawnAttributeSet::URoguePawnAttributeSet()
+{
+	MoveSpeed = FRogueAttribute(550);
+}
+
+URogueMonsterAttributeSet::URogueMonsterAttributeSet()
+{
+	MoveSpeed = FRogueAttribute(450);
+}
 
 URogueHealthAttributeSet::URogueHealthAttributeSet()
 {
 	Health = FRogueAttribute(100);
 	HealthMax = FRogueAttribute(Health.GetValue());
+}
+
+void URoguePawnAttributeSet::PostAttributeChanged()
+{
+	Super::PostAttributeChanged();
+	
+	ApplyMoveSpeed();
+}
+
+void URoguePawnAttributeSet::InitializeAttributes()
+{
+	Super::InitializeAttributes();
+	
+	ApplyMoveSpeed();
+}
+
+void URoguePawnAttributeSet::ApplyMoveSpeed()
+{
+	ACharacter* OwningCharacter = Cast<ACharacter>( GetOwningComponent()->GetOwner());
+	OwningCharacter->GetCharacterMovement()->MaxWalkSpeed = MoveSpeed.GetValue();
+}
+
+URogueActionSystemComponent* URogueAttributeSet::GetOwningComponent() const
+{
+	return Cast<URogueActionSystemComponent>(GetOuter());
 }
 
 void URogueHealthAttributeSet::PostAttributeChanged()

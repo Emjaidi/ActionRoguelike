@@ -4,16 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
-#include "RogueAttributeSet.h"
 #include "Components/ActorComponent.h"
 #include "RogueActionSystemComponent.generated.h"
 
-struct FRogueAttributeSet;
+struct FRogueAttribute;
 class URogueAction;
 class URogueAttributeSet;
 
 
-UENUM()
+UENUM(BlueprintType)
 enum EAttributeModifyType
 {
 	Base,
@@ -22,7 +21,11 @@ enum EAttributeModifyType
 	Invalid
 };
 
+/* Native C++ Delegate*/
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnAttributeChanged, FGameplayTag, float /* NewHealth*/, float /* OldHealth*/);
+
+/* Blueprint Delegate*/
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnAttributeDynamicChanged, FGameplayTag, AttributeTage, float , NewAttributeValue, float, OldAttributeValue);
 
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -38,11 +41,21 @@ public:
 	
 	void StopAction(FGameplayTag InActionName);
 	
+	UFUNCTION(BlueprintCallable)
 	void ApplyAttributeChange(FGameplayTag AttributeTag, float NewValue, EAttributeModifyType ModifyType );
 	
-	FRogueAttribute* GetAttribute(FGameplayTag InAttributeTag);
+	FRogueAttribute* GetAttribute(FGameplayTag InAttributeTag) const;
+	
+	UFUNCTION(BlueprintCallable)
+	float GetAttributeValue(FGameplayTag InAttributeTag) const;
 
 	FOnAttributeChanged& GetAttributeListener(FGameplayTag AttributeTag);
+	
+	UFUNCTION(BlueprintCallable, DisplayName = "Add Attribute Listener", meta = (Keywords = "events, delegate"))
+	void AddDynamicAttributeListener(FOnAttributeDynamicChanged Event, FGameplayTag AttributeTag);
+	
+	UFUNCTION(BlueprintCallable, DisplayName = "Remove Attribute Listener", meta = (Keywords = "events, delegate"))
+	void RemoveDynamicAttributeListener(FOnAttributeDynamicChanged Event);
 	
 	void GrantAction(TSubclassOf<URogueAction> NewActionClass);
 	
@@ -61,6 +74,9 @@ protected:
 	TSubclassOf<URogueAttributeSet> AttributeSetClass;
 
 	TMap<FGameplayTag, FOnAttributeChanged> AttributeListeners;
+	
+	TMap<FGameplayTag, TArray<FOnAttributeDynamicChanged>> AttributeDynamicListeners;
+	
 	UPROPERTY()
 	TArray<TObjectPtr<URogueAction>> Actions;
 	
@@ -68,5 +84,6 @@ protected:
 	TArray<TSubclassOf<URogueAction>> DefaultActions;
 public:
 
+	virtual void BeginPlay() override;
 	URogueActionSystemComponent();
 };
