@@ -91,6 +91,13 @@ class URoguePlayerAttributeSet : public URoguePawnAttributeSet
 	GENERATED_BODY()
 	
 public:
+	UPROPERTY(EditAnywhere, Category=Attributes)
+	FRogueAttribute Rage;
+	
+	UPROPERTY(EditAnywhere, Category=Attributes)
+	FRogueAttribute RageMax;
+	
+	
 };
 
 UCLASS()

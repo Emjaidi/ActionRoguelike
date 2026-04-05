@@ -25,7 +25,7 @@ enum EAttributeModifyType
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnAttributeChanged, FGameplayTag, float /* NewHealth*/, float /* OldHealth*/);
 
 /* Blueprint Delegate*/
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnAttributeDynamicChanged, FGameplayTag, AttributeTage, float , NewAttributeValue, float, OldAttributeValue);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnAttributeDynamicChanged, FGameplayTag, AttributeTag, float , NewAttributeValue, float, OldAttributeValue);
 
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
