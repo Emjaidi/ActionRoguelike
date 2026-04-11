@@ -34,8 +34,6 @@ void ARoguePlayerCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	// ActionSystemComponent->OnHealthChanged.AddDynamic(this, &ARoguePlayerCharacter::OnHealthChanged);
-	
 	FOnAttributeChanged& Event = ActionSystemComponent->GetAttributeListener(SharedGameplayTags::Attribute_Health);
 	Event.AddUObject(this, &ThisClass::OnHealthChanged);
 }
@@ -121,5 +119,9 @@ float ARoguePlayerCharacter::TakeDamage(float DamageAmount, struct FDamageEvent 
 	
 	ActionSystemComponent->ApplyAttributeChange(SharedGameplayTags::Attribute_Health, -ActualDamage, Base);
 
+	float ActualRage = ActualDamage/25; // Placeholder for better logic to rage
+	ActionSystemComponent->ApplyAttributeChange(SharedGameplayTags::Attribute_Rage, ActualRage, Base);
+	
 	return ActualDamage;
 }
+
