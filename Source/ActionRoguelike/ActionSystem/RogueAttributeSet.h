@@ -33,7 +33,7 @@ struct FRogueAttribute
 /**
  * 
  */
-UCLASS()
+UCLASS(EditInlineNew)
 class ACTIONROGUELIKE_API URogueAttributeSet : public UObject
 {
 	GENERATED_BODY()

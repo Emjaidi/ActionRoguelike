@@ -12,16 +12,18 @@
 URogueActionSystemComponent::URogueActionSystemComponent()
 {
 	bWantsInitializeComponent = true;
-	
-	AttributeSetClass = URogueAttributeSet::StaticClass();
 }
 
 void URogueActionSystemComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
 
-	Attributes = NewObject<URogueAttributeSet>(this, AttributeSetClass);
-	
+	if (Attributes == nullptr)
+	{
+		Attributes = NewObject<URogueAttributeSet>(this, URogueAttributeSet::StaticClass());
+		UE_LOG(LogTemp, Warning, TEXT("No default AttributeSet defined. Set using SetDefaultAttributeSet() "
+			"during Actor Construction or assign in Blueprint ActionComponent for %s."), *GetNameSafe(GetOwner()));
+	}
 	
 	for (TFieldIterator<FStructProperty> PropIt(Attributes->GetClass()); PropIt; ++PropIt)
 	{
@@ -41,6 +43,15 @@ void URogueActionSystemComponent::InitializeComponent()
 	
 	FOnAttributeChanged& Event = AttributeListeners.FindOrAdd(SharedGameplayTags::Attribute_Health);
 	Event.AddUObject(this, &ThisClass::OnHealthChanged);
+}
+
+void URogueActionSystemComponent::SetDefaultAttributeSet(TSubclassOf<URogueAttributeSet> AttributeSetClass)
+{
+	check(!HasBeenInitialized());
+	
+	// Only available during Constructors or UObjects
+	FObjectInitializer& ObjectInitializer = FObjectInitializer::Get();
+	Attributes = Cast<URogueAttributeSet>( ObjectInitializer.CreateDefaultSubobject(this, TEXT("Attributes"), AttributeSetClass, AttributeSetClass));
 }
 
 void URogueActionSystemComponent::BeginPlay()

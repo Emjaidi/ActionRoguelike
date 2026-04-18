@@ -71,8 +71,8 @@ protected:
 	UFUNCTION()
 	void OnHealthChanged(FGameplayTag AttributeTag, float NewHealth, float OldHealth);
 
-	UFUNCTION()
-	void OnRageChanged(FGameplayTag AttributeTag, float NewRage, float OldRage);
+	// UFUNCTION()
+	// void OnRageChanged(FGameplayTag AttributeTag, float NewRage, float OldRage);
 public:
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
