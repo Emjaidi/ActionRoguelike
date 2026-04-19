@@ -95,8 +95,11 @@ void URogueActionSystemComponent::StopAction(FGameplayTag InActionName)
 	{
 		if (Action->GetActionName() == InActionName)
 		{
-			Action->StopAction();
-			return;
+			if (Action->IsRunning())
+			{
+				Action->StopAction();
+				return;
+			}
 		}
 	}
 	
