@@ -22,6 +22,11 @@ float ARogueAICharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	
 	ActionSystemComponent->ApplyAttributeChange(SharedGameplayTags::Attribute_Health, -ActualDamage, Base);
-
+	
+	// GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
+	
+	GetMesh()->SetCustomPrimitiveDataFloat(0,GetWorld()->TimeSeconds);
+	
+	
 	return ActualDamage;
 }
