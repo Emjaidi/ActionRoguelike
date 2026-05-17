@@ -9,6 +9,8 @@
 ARogueProjectileMagic::ARogueProjectileMagic()
 {
 	ProjectileMovementComponent->InitialSpeed = 2000.0f;
+	
+	InitialLifeSpan = 8.0f;
 }
 
 void ARogueProjectileMagic::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
@@ -21,5 +23,6 @@ void ARogueProjectileMagic::OnActorHit(UPrimitiveComponent* HitComponent, AActor
 	
 	UGameplayStatics::ApplyPointDamage(OtherActor, 10.f, HitFromDirection, Hit,  GetInstigatorController(),
 		this, DmgTypeClass);
+	
 }
 
